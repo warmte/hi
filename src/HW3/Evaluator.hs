@@ -254,8 +254,7 @@ module HW3.Evaluator where
         unless (denominator f == 1 && denominator l == 1) (throwE HiErrorInvalidArgument)
         let start = if f < 0 then length + fromInteger (numerator f) else fromInteger $ numerator f
         let end = if l < 0 then length + fromInteger (numerator l) else fromInteger $ numerator l
-        unless (start >= 0 && start < length && end >= 0 && end <= length) (throwE HiErrorInvalidArgument)
-        return (start, end)
+        return (max start 0, min end length)
       (HiValueNull, HiValueNull) -> normaliseSlice (HiExprValue $ HiValueNumber 0) (HiExprValue $ HiValueNumber $ toRational length) length
       (HiValueNull, val) -> normaliseSlice (HiExprValue $ HiValueNumber 0) (HiExprValue val) length
       (val, HiValueNull) -> normaliseSlice (HiExprValue val) (HiExprValue $ HiValueNumber $ toRational length) length

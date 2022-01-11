@@ -28,7 +28,8 @@ module HW3.Parser where
   import Data.Sequence (fromList)
   import Data.Word (Word8)
   import Data.Char (isAlphaNum, isAlpha)
-
+  import Data.List (intercalate)
+  
   type Parser = Parsec Void String
 
   -- space skipping parser 
@@ -113,8 +114,8 @@ module HW3.Parser where
   dotarg :: Parser FuncModifier
   dotarg = lexeme $ do
     _ <- lexeme $ char '.'
-    text <- (:) <$> satisfy isAlpha <*> many (satisfy isAlphaNum)
-    pure $ DottedArg $ HiExprValue $ HiValueString $ pack text
+    text <- ((:) <$> satisfy isAlpha <*> many (satisfy isAlphaNum)) `sepBy1` char '-'
+    pure $ DottedArg $ HiExprValue $ HiValueString $ pack $ intercalate "-" text
 
   -- parser for run sign 
   run :: Parser FuncModifier
