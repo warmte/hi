@@ -113,27 +113,27 @@ module HW3.Parser where
   dotarg :: Parser FuncModifier
   dotarg = lexeme $ do
     _ <- lexeme $ char '.'
-    text <- ((:) <$> satisfy isAlpha <*> many (satisfy isAlphaNum)) `sepBy1` char '-'
-    pure $ DottedArg $ HiExprValue $ HiValueString $ pack $ concat text
+    text <- (:) <$> satisfy isAlpha <*> many (satisfy isAlphaNum)
+    pure $ DottedArg $ HiExprValue $ HiValueString $ pack text
 
   -- parser for run sign 
-  run :: Parser FuncModifier 
+  run :: Parser FuncModifier
   run = Run <$ lexeme (char '!')
 
   -- parser which parses function application
   hiexprapply :: Parser HiExpr
   hiexprapply = label "expression application" $ do
-    name <- lexeme ((between (lexeme $ char '(') (lexeme $ char ')') hiexpr) <|> value)
+    name <- lexeme (between (lexeme $ char '(') (lexeme $ char ')') hiexpr <|> value)
     funArgs <- many (funcargs <|> run <|> dotarg)
     pure $ if not (Prelude.null funArgs) then combine name funArgs else name
-    
-    where 
+
+    where
       -- evaluate a result value of all stacked applications 
       combine :: HiExpr -> [FuncModifier] -> HiExpr
       combine x []     = x
       combine x [Args args]    = HiExprApply x args
       combine x [DottedArg arg]    = HiExprApply x [arg]
-      combine x [Run]    = HiExprRun x 
+      combine x [Run]    = HiExprRun x
       combine x ((Args args):ys) = combine (HiExprApply x args) ys
       combine x ((DottedArg arg):ys) = combine (HiExprApply x [arg]) ys
       combine x (Run:ys) = combine (HiExprRun x) ys
