@@ -330,6 +330,7 @@ module HW3.Evaluator where
       rr <- eval' r
       case rr of
         (HiValueBool res) -> if res then eval' x else eval' y
+        _ -> throwE HiErrorInvalidArgument 
   eval' (HiExprApply (HiExprValue (HiValueString str)) args) = evalStringFunction args str
   eval' (HiExprApply (HiExprValue (HiValueList lst)) args) = evalListFunction args lst
   eval' (HiExprApply (HiExprValue (HiValueBytes bytes)) args) = evalBytesFunction args bytes
