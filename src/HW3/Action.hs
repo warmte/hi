@@ -46,7 +46,7 @@ module HW3.Action where
       }
     runAction HiActionNow = HIO { runHIO = \st -> do
         unless (AllowTime `elem` st) (throwIO $ PermissionRequired AllowTime)
-        HiValueString . pack <$> fmap show getCurrentTime
+        HiValueTime <$> getCurrentTime
       }
     runAction (HiActionRand left right) = HIO { runHIO = \st -> do
         num <- getStdRandom (uniformR (left, right))
